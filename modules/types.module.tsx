@@ -11,7 +11,8 @@ export type SidebarProps = {
 }
 
 export type TableProps = Children & {
-  head: Array<string>
+  head: Array<string>,
+  isEmpty?: boolean | false
 }
 
 export type ListProps = {
@@ -61,3 +62,5 @@ export type ProductsProps = ListProps & {
 export type CartsProps = ListProps & {
   carts: Array<CartProps>
 }
+
+export type CategoriesProps = Array<string>

@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Flex, Td, Tr } from '@chakra-ui/react'
+import { Flex, Grid, GridItem, Text, Td, Tr } from '@chakra-ui/react'
 import { CartProps } from '@/modules/types.module'
 import { Table } from '@/components/table/table.component'
 
@@ -26,9 +26,26 @@ const Carts = ({ params } : { params: { detail: string } }) => {
 
   return (
     <Flex { ...CartDetailAttr.Container }>
-      <Flex { ...CartDetailAttr.SearchContainer }>
-      </Flex>
       <Flex { ...CartDetailAttr.ContentContainer }>
+        {
+          carts &&
+            <Flex { ...CartDetailAttr.DetailContainer }>
+              <Grid { ...CartDetailAttr.DetailGridContainer }>
+                <GridItem { ...CartDetailAttr.DetailGridItemContainer }>
+                  <Text>User: { carts.userId }</Text>
+                </GridItem>
+                <GridItem { ...CartDetailAttr.DetailGridItemContainer }>
+                  <Text># of Items: { carts.totalProducts } </Text>
+                </GridItem>
+                <GridItem { ...CartDetailAttr.DetailGridItemContainer }>
+                  <Text>Added On: -</Text>
+                </GridItem>
+                <GridItem { ...CartDetailAttr.DetailGridItemContainer }>
+                  <Text>Total Amount: { carts.totalQuantity }</Text>
+                </GridItem>
+              </Grid>
+            </Flex>
+        }
         <Flex { ...CartDetailAttr.TableContainer }>
           {
             !isLoading && carts &&

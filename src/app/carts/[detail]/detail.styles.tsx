@@ -1,4 +1,4 @@
-import { FlexProps, InputProps } from '@chakra-ui/react'
+import { FlexProps, GridProps, GridItemProps } from '@chakra-ui/react'
 
 class CartDetailAttr {
   static Container: FlexProps = {
@@ -7,17 +7,25 @@ class CartDetailAttr {
     alignItems: 'flex-start'
   }
 
-  static SearchContainer: FlexProps = {
-    alignSelf: 'flex-end'
-  }
-
-  static SearchInput: InputProps = {
-    placeholder: 'Search Product'
-  }
-
   static ContentContainer: FlexProps = {
     width: 'full',
     flexDirection: 'column'
+  }
+
+  static DetailContainer: FlexProps = {
+    width: 'full',
+    padding: 6,
+    backgroundColor: 'whitesmoke'
+  }
+
+  static DetailGridContainer: GridProps = {
+    templateColumns: 'repeat(2, 1fr)',
+    width: 'full',
+    gap: 6
+  }
+
+  static DetailGridItemContainer: GridItemProps = {
+    width: 'full'
   }
 
   static TableContainer: FlexProps = {

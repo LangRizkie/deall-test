@@ -1,3 +1,3 @@
-class TableAttr { }
+class TableAttr {}
 
 export default TableAttr

@@ -7,7 +7,8 @@ class ProductsAttr {
     alignItems: 'flex-start'
   }
 
-  static SearchContainer: FlexProps = {
+  static HeaderContainer: FlexProps = {
+    gap: 4,
     alignSelf: 'flex-end'
   }
 
@@ -22,6 +23,10 @@ class ProductsAttr {
 
   static TableContainer: FlexProps = {
     marginY: 4
+  }
+
+  static PaginationContainer = (position: string) : FlexProps => {
+    return { width: 'full', justifyContent: position }
   }
 }
 
