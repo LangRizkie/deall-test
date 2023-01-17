@@ -6,10 +6,14 @@ class SidebarAttr {
   }
 
   static Container: FlexProps = {
-    width: 64,
     height: 'full',
     minHeight: '100vh',
+  }
+
+  static NavigationContainer: FlexProps = {
+    width: 64,
     padding: 4,
+    gap: 4,
     borderRightStyle: 'solid',
     borderRightWidth: 'thin',
     borderRightColor: 'blackAlpha.200',
@@ -17,7 +21,13 @@ class SidebarAttr {
     flexDirection: 'column'
   }
 
-  static ButtonGroup: ButtonGroupProps = {
+  static NavigationCloseButton: ButtonProps = {
+    width: 'fit-content',
+    alignSelf: 'flex-end',
+    size: 'sm'
+  }
+
+  static NavigationButtonGroup: ButtonGroupProps = {
     variant: 'ghost',
     colorScheme: 'purple',
     width: 'full',
@@ -26,9 +36,19 @@ class SidebarAttr {
     flexDirection: 'column'
   }
 
-  static Button: ButtonProps = {
+  static NavigationButton: ButtonProps = {
     width: 'full',
     justifyContent: 'flex-start'
+  }
+
+  static SubNavigationContainer: FlexProps = {
+    position: 'fixed',
+    padding: 4,
+    zIndex: 'modal'
+  }
+
+  static SubNavigationButton: ButtonProps = {
+    size: 'sm'
   }
 }
 

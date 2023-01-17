@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react'
+
 export type Children = {
   children: React.ReactNode
 }
@@ -7,7 +9,9 @@ export type Data<T> = {
 }
 
 export type SidebarProps = {
-  state: boolean
+  state: boolean,
+  setState: Dispatch<SetStateAction<boolean>>,
+  isMobile?: boolean
 }
 
 export type TableProps = Children & {

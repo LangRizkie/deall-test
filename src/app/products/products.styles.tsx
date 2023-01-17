@@ -8,7 +8,6 @@ class ProductsAttr {
   }
 
   static HeaderContainer: FlexProps = {
-    gap: 4,
     alignSelf: 'flex-end'
   }
 

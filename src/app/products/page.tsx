@@ -3,7 +3,7 @@
 import { ChangeEvent, Fragment, useEffect, useMemo, useState } from 'react'
 import { NextPage } from 'next'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
-import { Flex, Input, InputProps, Td, Tr, useBreakpointValue } from '@chakra-ui/react'
+import { Button, Flex, Input, InputProps, Td, Tr, useBreakpointValue } from '@chakra-ui/react'
 import { ProductsProps } from '@/modules/types.module'
 import { Table } from '@/components/table/table.component'
 
@@ -42,7 +42,7 @@ const ProductTable: React.FC<ProductTableProps> = (props) => {
   return (
     <Fragment>
       <Flex { ...ProductsAttr.TableContainer }>
-        <Table 
+        <Table
           head={props.headTable}
           isEmpty={isEmpty(props.products.products)}
         >
@@ -75,16 +75,19 @@ const ProductTable: React.FC<ProductTableProps> = (props) => {
 
 const Products: NextPage = () => {
   const limit = Global.paginationLimit
+
   const params = useSearchParams()
   const router = useRouter()
   const path = usePathname()
+
   const [skip, setSkip] = useState<string>(params.get('skip') || Global.paginationSkip)
-  const [search, setSearch] = useState<string>(params.has('q') ? (params.get('q') || '' ): '')
-  const createParams = useMemo(() => 
+  const [search, setSearch] = useState<string>(params.has('q') ? (params.get('q') || '') : '')
+
+  const createParams = useMemo(() =>
     (new URLSearchParams(
-      isEmpty(Array.from(params.keys())) 
-      ? { limit, skip } 
-      : Object.fromEntries(params.entries()))), 
+      isEmpty(Array.from(params.keys()))
+      ? { limit, skip }
+      : Object.fromEntries(params.entries()))),
     []
   )
 
@@ -113,7 +116,7 @@ const Products: NextPage = () => {
 
   const { data: products, isLoading: productsLoading } =
     Endpoint.fetch<ProductsProps>(
-      Endpoint.baseAPI, 
+      Endpoint.baseAPI,
       (search || params.has('q') ? '/products/search?' : '/products?') + createParams
     )
 
@@ -138,7 +141,7 @@ const Products: NextPage = () => {
           <Flex { ...ProductsAttr.ContentContainer }>
             {
               !productsLoading && !isEmpty(products) &&
-                <ProductTable 
+                <ProductTable
                   headTable={headTable}
                   products={products}
                   pageCount={Math.ceil(products.total / Number(limit))}
