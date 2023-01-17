@@ -8,7 +8,7 @@ import CartDetailAttr from './detail.styles'
 import Endpoint from '@/modules/endpoint.module'
 import Loading from '@/components/loading/loading.component'
 
-const Carts = ({ params } : { params: { detail: string } }) => {
+const CartsDetail = ({ params } : { params: { detail: string } }) => {
 
   const headTable: Array<string> = [
     'title',
@@ -70,4 +70,4 @@ const Carts = ({ params } : { params: { detail: string } }) => {
   )
 }
 
-export default Carts
+export default CartsDetail

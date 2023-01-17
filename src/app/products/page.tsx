@@ -1,9 +1,8 @@
 'use client'
 
-import { ChangeEvent, Fragment, useEffect, useMemo, useState } from 'react'
-import { NextPage } from 'next'
-import { useSearchParams, useRouter, usePathname } from 'next/navigation'
-import { Button, Flex, Input, InputProps, Td, Tr, useBreakpointValue } from '@chakra-ui/react'
+import { ChangeEvent, Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { Flex, Input, InputProps, Td, Tr, useBreakpointValue } from '@chakra-ui/react'
 import { ProductsProps } from '@/modules/types.module'
 import { Table } from '@/components/table/table.component'
 
@@ -73,23 +72,24 @@ const ProductTable: React.FC<ProductTableProps> = (props) => {
   )
 }
 
-const Products: NextPage = () => {
+const Products = () => {
   const limit = Global.paginationLimit
+  const [mounted, setMounted] = useState<boolean>(false)
+  const [skip, setSkip] = useState<string>(Global.paginationSkip)
+  const [search, setSearch] = useState<string>()
 
-  const params = useSearchParams()
   const router = useRouter()
-  const path = usePathname()
+  const searchParams = useSearchParams()
+  const pathname = usePathname() || ''
 
-  const [skip, setSkip] = useState<string>(params.get('skip') || Global.paginationSkip)
-  const [search, setSearch] = useState<string>(params.has('q') ? (params.get('q') || '') : '')
+  const containParams = !isEmpty(Array.from(searchParams.values()))
+  const containSearch = search && searchParams.has('q')
 
-  const createParams = useMemo(() =>
-    (new URLSearchParams(
-      isEmpty(Array.from(params.keys()))
-      ? { limit, skip }
-      : Object.fromEntries(params.entries()))),
-    []
-  )
+  const productPath = '/products'
+  const searchPath = '/products/search'
+
+  const productEndpoint = (containSearch ? searchPath : productPath)
+    + '?' + new URLSearchParams(Object.fromEntries(searchParams.entries()))
 
   const headTable: Array<string> = [
     'title',
@@ -100,30 +100,41 @@ const Products: NextPage = () => {
   ]
 
   const onSearch = (value: string) => {
-    createParams.set('limit', limit)
-    createParams.set('skip', Global.paginationSkip)
-    createParams.set('q', value)
-
     setSearch(value)
+    setSkip('0')
+    setSearchParams({ 'skip': '0', 'q': value })
   }
 
   const onPageChange = (value: string) => {
-    createParams.set('limit', limit)
-    createParams.set('skip', value)
-
     setSkip(value)
+    setSearchParams({ 'skip': value })
   }
+
+  const setSearchParams = useCallback((object: object) => {
+    const record = new URLSearchParams({ ...Object.fromEntries(searchParams.entries()), ...object })
+    const url = new URLSearchParams(record)
+
+    return router.replace(`${pathname}?${url}`)
+  }, [pathname, router, searchParams])
+
+  useEffect(() => {
+    if (!containParams && !mounted) {
+      return setSearchParams({ limit, skip })
+    }
+
+    setMounted(true)
+
+    if (searchParams.has('skip')) setSkip(searchParams.get('skip') || '')
+    if (searchParams.has('q')) setSearch(searchParams.get('q') || '')
+
+  }, [containParams, limit, mounted, searchParams, setSearchParams, skip])
 
   const { data: products, isLoading: productsLoading } =
     Endpoint.fetch<ProductsProps>(
       Endpoint.baseAPI,
-      (search || params.has('q') ? '/products/search?' : '/products?') + createParams
+      productEndpoint,
+      mounted
     )
-
-  useEffect(() => {
-    router.replace(path + '?' + createParams)
-
-  }, [path, createParams, router, products])
 
   return (
     <Flex { ...ProductsAttr.Container }>

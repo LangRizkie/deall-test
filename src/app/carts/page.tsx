@@ -1,7 +1,6 @@
 'use client'
 
-import { Fragment, useEffect, useMemo, useState } from 'react'
-import { NextPage } from 'next'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { Button, Flex, Link, Td, Tr, useBreakpointValue } from '@chakra-ui/react'
 import { CartsProps } from '@/modules/types.module'
@@ -28,8 +27,8 @@ const CartTable: React.FC<CartsTableProps> = (props) => {
   return (
     <Fragment>
       <Flex { ...CartsAttr.TableContainer }>
-        <Table 
-          head={props.headTable} 
+        <Table
+          head={props.headTable}
           isEmpty={isEmpty(props.carts.carts)}
         >
           {
@@ -70,13 +69,21 @@ const CartTable: React.FC<CartsTableProps> = (props) => {
   )
 }
 
-const Carts: NextPage = () => {
+const Carts = () => {
   const limit = Global.paginationLimit
-  const params = useSearchParams()
+  const [mounted, setMounted] = useState<boolean>(false)
+  const [skip, setSkip] = useState<string>(Global.paginationSkip)
+
   const router = useRouter()
-  const path = usePathname()
-  const [skip, setSkip] = useState<string>(params.get('skip') || Global.paginationSkip)
-  const createParams = useMemo(() => (new URLSearchParams({ limit, skip })), [limit, skip])
+  const searchParams = useSearchParams()
+  const pathname = usePathname() || ''
+
+  const containParams = !isEmpty(Array.from(searchParams.values()))
+
+  const cartPath = '/carts'
+
+  const cartEndpoint = cartPath
+    + '?' + new URLSearchParams(Object.fromEntries(searchParams.entries()))
 
   const headTable: Array<string> = [
     'detail',
@@ -86,12 +93,35 @@ const Carts: NextPage = () => {
     'total'
   ]
 
-  const { data: carts, isLoading } =
-    Endpoint.fetch<CartsProps>(Endpoint.baseAPI, '/carts?' + createParams)
+  const onPageChange = (value: string) => {
+    setSkip(value)
+    setSearchParams({ 'skip': value })
+  }
+
+  const setSearchParams = useCallback((object: object) => {
+    const record = new URLSearchParams({ ...Object.fromEntries(searchParams.entries()), ...object })
+    const url = new URLSearchParams(record)
+
+    return router.replace(`${pathname}?${url}`)
+  }, [pathname, router, searchParams])
 
   useEffect(() => {
-    router.replace(path + '?' + createParams)
-  }, [path, createParams, router])
+    if (!containParams && !mounted) {
+      return setSearchParams({ limit, skip })
+    }
+
+    setMounted(true)
+
+    if (searchParams.has('skip')) setSkip(searchParams.get('skip') || '')
+
+  }, [containParams, limit, mounted, searchParams, setSearchParams, skip])
+
+  const { data: carts, isLoading } =
+    Endpoint.fetch<CartsProps>(
+      Endpoint.baseAPI,
+      cartEndpoint,
+      mounted
+    )
 
   if (isLoading) return <Loading />
 
@@ -100,11 +130,11 @@ const Carts: NextPage = () => {
       <Flex { ...CartsAttr.ContentContainer }>
         {
           !isLoading && !isEmpty(carts) &&
-            <CartTable 
+            <CartTable
               headTable={headTable}
               carts={carts}
               pageCount={Math.ceil(carts.total / Number(limit))}
-              onPageChange={(e) => setSkip(String(e.selected * Number(limit)))}
+              onPageChange={(e) => onPageChange(String(e.selected * Number(limit)))}
               forcePage={Math.ceil(Number(skip) / Number(limit))}
             />
         }
